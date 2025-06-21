@@ -1,0 +1,616 @@
+:root {
+  --primary: #4361ee;
+  --primary-dark: #3a0ca3;
+  --secondary: #f72585;
+  --light: #f8f9fa;
+  --dark: #212529;
+  --gray: #6c757d;
+  --light-gray: #e9ecef;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  font-family: 'Poppins', sans-serif;
+  background-color: #f5f7fa;
+  color: var(--dark);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+}
+
+/* Responsive container */
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header styles */
+.header {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  padding: 1rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+.logo-img {
+  height: 40px;
+  width: auto;
+}
+
+/* Main content */
+.main {
+  flex: 1;
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.title {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: var(--primary-dark);
+}
+
+.title span {
+  color: var(--secondary);
+}
+
+/* Tools grid */
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+/* Tool container */
+.tool-container {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-top: 2rem;
+  min-height: 400px;
+}
+
+/* Ad banners */
+.ad-banner {
+  background: var(--light-gray);
+  padding: 1rem;
+  margin: 1rem 0;
+  border-radius: 8px;
+  text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .main {
+    padding: 1rem;
+  }
+  
+  .title {
+    font-size: 2rem;
+  }
+  
+  .tool-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .tool-container {
+    padding: 1rem;
+  }
+}
+import { motion } from 'framer-motion';
+import styles from '../styles/ToolCard.module.css';
+
+const ToolCard = ({ tool, active, onClick }) => {
+  return (
+    <motion.div
+      className={`${styles.card} ${active ? styles.active : ''}`}
+      onClick={onClick}
+      whileHover={{ scale: 1.03 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+    >
+      <div className={styles.icon}>{tool.icon}</div>
+      <h3 className={styles.title}>{tool.title}</h3>
+      <p className={styles.description}>{tool.description}</p>
+      {active && <div className={styles.activeIndicator} />}
+    </motion.div>
+  );
+};
+
+export default ToolCard;
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.card:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.card.active {
+  border-color: #4361ee;
+  background-color: #f8f9ff;
+}
+
+.icon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: #4361ee;
+}
+
+.title {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: var(--dark);
+}
+
+.description {
+  color: var(--gray);
+  font-size: 0.9rem;
+}
+
+.activeIndicator {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 5px;
+  height: 100%;
+  background-color: #4361ee;
+}
+import { useState, useCallback } from 'react';
+import { FiUpload, FiImage, FiX } from 'react-icons/fi';
+import styles from '../styles/FileUpload.module.css';
+
+const FileUpload = ({ onFileChange, accept = 'image/*', multiple = false }) => {
+  const [preview, setPreview] = useState(null);
+  const [fileName, setFileName] = useState('');
+
+  const handleFileChange = useCallback((e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFileName(file.name);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+      onFileChange(file);
+    }
+  }, [onFileChange]);
+
+  const clearFile = useCallback(() => {
+    setPreview(null);
+    setFileName('');
+    onFileChange(null);
+  }, [onFileChange]);
+
+  return (
+    <div className={styles.uploadContainer}>
+      <label className={styles.uploadArea}>
+        <input
+          type="file"
+          accept={accept}
+          multiple={multiple}
+          onChange={handleFileChange}
+          className={styles.fileInput}
+        />
+        {preview ? (
+          <div className={styles.previewContainer}>
+            <img src={preview} alt="Preview" className={styles.previewImage} />
+            <div className={styles.fileInfo}>
+              <span>{fileName}</span>
+              <button type="button" onClick={clearFile} className={styles.clearButton}>
+                <FiX />
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className={styles.uploadPrompt}>
+            <FiUpload size={24} />
+            <p>Click to upload or drag and drop</p>
+            <small>Supports: JPG, PNG, WEBP</small>
+          </div>
+        )}
+      </label>
+    </div>
+  );
+};
+
+export default FileUpload;
+.uploadContainer {
+  margin: 1.5rem 0;
+}
+
+.uploadArea {
+  display: block;
+  border: 2px dashed #ced4da;
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.uploadArea:hover {
+  border-color: #4361ee;
+  background-color: #f8f9ff;
+}
+
+.fileInput {
+  display: none;
+}
+
+.uploadPrompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--gray);
+}
+
+.previewContainer {
+  position: relative;
+}
+
+.previewImage {
+  max-width: 100%;
+  max-height: 300px;
+  border-radius: 8px;
+  display: block;
+  margin: 0 auto;
+}
+
+.fileInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background: var(--light-gray);
+  border-radius: 6px;
+}
+
+.clearButton {
+  background: none;
+  border: none;
+  color: var(--gray);
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+.clearButton:hover {
+  color: var(--secondary);
+}
+import { useState } from 'react';
+import FileUpload from '../FileUpload';
+import Button from '../Button';
+import styles from '../../styles/Tool.module.css';
+
+const PhotoEnhancer = () => {
+  const [image, setImage] = useState(null);
+  const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleEnhance = async () => {
+    if (!image) return;
+    
+    setLoading(true);
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      setResult(URL.createObjectURL(image));
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className={styles.toolContent}>
+      <h2>Enhance Photo Quality</h2>
+      <p className={styles.toolDescription}>
+        Upload a low-quality photo and our AI will increase its resolution and sharpness.
+      </p>
+      
+      <div className={styles.toolGrid}>
+        <div className={styles.uploadSection}>
+          <h3>Original Image</h3>
+          <FileUpload onFileChange={setImage} />
+        </div>
+        
+        <div className={styles.actionSection}>
+          <Button 
+            onClick={handleEnhance} 
+            disabled={!image || loading}
+            loading={loading}
+          >
+            {loading ? 'Processing...' : 'Enhance Image'}
+          </Button>
+        </div>
+        
+        {result && (
+          <div className={styles.resultSection}>
+            <h3>Enhanced Result</h3>
+            <div className={styles.resultImage}>
+              <img src={result} alt="Enhanced result" />
+              <a href={result} download="enhanced-image.jpg" className={styles.downloadButton}>
+                Download Result
+              </a>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default PhotoEnhancer;
+.toolContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.toolDescription {
+  color: var(--gray);
+  margin-bottom: 1rem;
+}
+
+.toolGrid {
+  display: grid;
+  gap: 2rem;
+}
+
+.uploadSection, .resultSection {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.resultImage {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.resultImage img {
+  max-width: 100%;
+  max-height: 400px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.downloadButton {
+  background: var(--primary);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.downloadButton:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+.actionSection {
+  display: flex;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .toolGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+  
+  .actionSection {
+    grid-column: span 2;
+  }
+}
+import { motion } from 'framer-motion';
+import styles from '../styles/Button.module.css';
+
+const Button = ({ children, onClick, disabled = false, loading = false, ...props }) => {
+  return (
+    <motion.button
+      className={`${styles.button} ${disabled ? styles.disabled : ''}`}
+      onClick={onClick}
+      disabled={disabled || loading}
+      whileHover={{ scale: disabled ? 1 : 1.03 }}
+      whileTap={{ scale: disabled ? 1 : 0.98 }}
+      {...props}
+    >
+      {loading ? (
+        <div className={styles.spinner}>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      ) : (
+        children
+      )}
+    </motion.button>
+  );
+};
+
+export default Button;
+.button {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 180px;
+}
+
+.button:hover {
+  background: var(--primary-dark);
+}
+
+.button.disabled {
+  background: var(--light-gray);
+  color: var(--gray);
+  cursor: not-allowed;
+}
+
+.spinner {
+  display: inline-block;
+  position: relative;
+  width: 24px;
+  height: 24px;
+}
+
+.spinner div {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: white;
+  border-radius: 50%;
+  animation: spinner 1.2s linear infinite;
+}
+
+.spinner div:nth-child(1) {
+  animation-delay: 0s;
+  top: 9px;
+  left: 0;
+}
+
+.spinner div:nth-child(2) {
+  animation-delay: -0.4s;
+  top: 3px;
+  left: 3px;
+}
+
+.spinner div:nth-child(3) {
+  animation-delay: -0.8s;
+  top: 0;
+  left: 9px;
+}
+
+@keyframes spinner {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.5);
+  }
+}
+/* Smooth animations */
+* {
+  scroll-behavior: smooth;
+}
+
+/* Fade-in animation for page transitions */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.main > * {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Tooltip styles */
+[data-tooltip] {
+  position: relative;
+}
+
+[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--dark);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  z-index: 10;
+}
+
+/* Loading skeleton */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+npm install framer-motion react-icons
+import { Html, Head, Main, NextScript } from 'next/document';
+
+export default function Document() {
+  return (
+    <Html>
+      <Head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+      </Head>
+      <body>
+        <Main />
+        <NextScript />
+      </body>
+    </Html>
+  );
+}

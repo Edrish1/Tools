@@ -1,0 +1,165 @@
+import { useState } from 'react';
+import Head from 'next/head';
+import Image from 'next/image';
+import styles from '../styles/Home.module.css';
+
+// Import tool components
+import PhotoEnhancer from '../components/tools/PhotoEnhancer';
+import BackgroundRemover from '../components/tools/BackgroundRemover';
+import ImageToPdf from '../components/tools/ImageToPdf';
+import FaceSwapper from '../components/tools/FaceSwapper';
+import CollageMaker from '../components/tools/CollageMaker';
+
+// Import UI components
+import AdBanner from '../components/AdBanner';
+import ToolCard from '../components/ToolCard';
+
+export default function Home() {
+  const [activeTool, setActiveTool] = useState(null);
+
+  // Tools data
+  const tools = [
+    {
+      id: 'enhance',
+      title: 'Photo Enhancer',
+      description: 'Increase resolution and sharpen blurry photos',
+      icon: '🖼️',
+      component: <PhotoEnhancer />
+    },
+    {
+      id: 'remove-bg',
+      title: 'Background Editor',
+      description: 'Remove or change photo background',
+      icon: '✂️',
+      component: <BackgroundRemover />
+    },
+    {
+      id: 'pdf',
+      title: 'PDF Converter',
+      description: 'Convert images to customizable PDF',
+      icon: '📄',
+      component: <ImageToPdf />
+    },
+    {
+      id: 'face-swap',
+      title: 'Face Swap',
+      description: 'Swap faces between photos',
+      icon: '😊',
+      component: <FaceSwapper />
+    },
+    {
+      id: 'collage',
+      title: 'Collage Maker',
+      description: 'Create photo collages with templates',
+      icon: '🖼️🖼️',
+      component: <CollageMaker />
+    }
+  ];
+
+  return (
+    <div className={styles.container}>
+      <Head>
+        <title>AI Photo Editor | Enhance, Remove BG, Convert to PDF</title>
+        <meta name="description" content="Free online photo editing tools powered by AI. Enhance resolution, remove backgrounds, convert to PDF, swap faces and create collages." />
+        <meta name="keywords" content="photo editor, AI photo enhancer, background remover, image to pdf, face swap, collage maker" />
+        <meta property="og:title" content="AI Photo Editor - Professional Photo Editing Tools" />
+        <meta property="og:description" content="Enhance, edit and convert your photos with our free AI-powered tools" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://yourdomain.com" />
+        <meta property="og:image" content="https://yourdomain.com/preview.jpg" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+
+      {/* Header with Logo */}
+      <header className={styles.header}>
+        <div className={styles.logoContainer}>
+          <Image 
+            src="/logo.png" 
+            alt="Photo Editor Logo" 
+            width={120} 
+            height={50} 
+            className={styles.logo}
+          />
+        </div>
+        <nav className={styles.nav}>
+          <a href="#features" className={styles.navLink}>Features</a>
+          <a href="#how-it-works" className={styles.navLink}>How It Works</a>
+          <a href="#about" className={styles.navLink}>About</a>
+        </nav>
+      </header>
+
+      {/* Top Ad Banner */}
+      <AdBanner 
+        adId="ca-pub-1234567890123456" 
+        slotId="1234567890"
+        location="top"
+      />
+
+      <main className={styles.main}>
+        {/* Hero Section */}
+        <section className={styles.hero}>
+          <h1 className={styles.heroTitle}>Powerful AI Photo Editing Tools</h1>
+          <p className={styles.heroSubtitle}>
+            Enhance, edit and transform your photos with our free online tools
+          </p>
+        </section>
+
+        {/* Tools Grid */}
+        <section id="features" className={styles.toolsSection}>
+          <h2 className={styles.sectionTitle}>Our Tools</h2>
+          <div className={styles.toolsGrid}>
+            {tools.map(tool => (
+              <ToolCard
+                key={tool.id}
+                tool={tool}
+                active={activeTool === tool.id}
+                onClick={() => setActiveTool(tool.id)}
+              />
+            ))}
+          </div>
+        </section>
+
+        {/* Active Tool Container */}
+        {activeTool && (
+          <section className={styles.toolContainer}>
+            {tools.find(t => t.id === activeTool).component}
+          </section>
+        )}
+
+        {/* How It Works Section */}
+        <section id="how-it-works" className={styles.howItWorks}>
+          <h2 className={styles.sectionTitle}>How It Works</h2>
+          <div className={styles.steps}>
+            <div className={styles.step}>
+              <span className={styles.stepNumber}>1</span>
+              <h3>Select a Tool</h3>
+              <p>Choose from our variety of photo editing tools</p>
+            </div>
+            <div className={styles.step}>
+              <span className={styles.stepNumber}>2</span>
+              <h3>Upload Your Photo</h3>
+              <p>Select images from your device</p>
+            </div>
+            <div className={styles.step}>
+              <span className={styles.stepNumber}>3</span>
+              <h3>Edit & Download</h3>
+              <p>Process and download your enhanced photo</p>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {/* Bottom Ad Banner */}
+      <AdBanner 
+        adId="ca-pub-1234567890123456" 
+        slotId="0987654321"
+        location="bottom"
+      />
+
+      {/* Footer */}
+      <footer className={styles.footer}>
+        <p>© {new Date().getFullYear()} AI Photo Editor. All rights reserved.</p>
+      </footer>
+    </div>
+  );
+}
